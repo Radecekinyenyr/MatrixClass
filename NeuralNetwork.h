@@ -4,14 +4,28 @@
 #include "MatrixLibrary.h"
 #include <math.h>
 
-/////////////////////////////////////////////////////////////////////////////////////////
-///                                  Radek Zach                                       ///
-/////////////////////////////////////////////////////////////////////////////////////////
-
 
 template<typename Base, typename T>
 inline bool instanceof(const T*) {
 	return std::is_base_of<Base, T>::value;
+}
+
+double softMax(std::vector<float> NNoutputValues, int inSize)
+{
+	double* exp_values = new double[inSize];
+	double add_exp_values = 0;
+	for (auto i = 0; i < inSize; ++i) {
+		add_exp_values += exp_values[i] = exp(double(NNoutputValues[i])); // secte vsechny hodnoty do jedne a rozdeli je do dynamickeho pole
+		
+	}
+	
+	double* normalize_exp_values = new double[inSize];
+	double add_normalize_exp_values = 0.0;
+	for (auto i = 0; i < inSize; ++i) {
+		add_normalize_exp_values += normalize_exp_values[i] = exp_values[i] / add_exp_values;
+		
+	}
+
 }
 
 float sigmoidFunction(float x)
