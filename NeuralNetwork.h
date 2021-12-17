@@ -8,7 +8,7 @@
 /// navrhnout do teto knihovny funkci zvanou soft max pro modelovani pravdepodobnosti ///
 /////////////////////////////////////////////////////////////////////////////////////////
 
-std::vector<double> softMax(std::vector<float> NNoutputValues, int inSize, bool probability = false)
+std::vector<double> softMax(std::vector<float> NNoutputValues, int inSize, bool singleProbability = false)
 {
 	double* exp_values = new double[inSize];
 	double add_exp_values = 0;
@@ -25,7 +25,7 @@ std::vector<double> softMax(std::vector<float> NNoutputValues, int inSize, bool 
 
 	}
 	
-	if (probability == false)
+	if (singleProbability == false)
 		return add_normalize_exp_values;
 	else {
 		return normalize_exp_values;
