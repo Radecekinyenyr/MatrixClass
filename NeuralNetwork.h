@@ -10,23 +10,30 @@ inline bool instanceof(const T*) {
 	return std::is_base_of<Base, T>::value;
 }
 
-double softMax(std::vector<float> NNoutputValues, int inSize)
+std::vector<double> softMax(std::vector<float> NNoutputValues, int inSize, bool probability = false)
 {
 	double* exp_values = new double[inSize];
 	double add_exp_values = 0;
 	for (auto i = 0; i < inSize; ++i) {
 		add_exp_values += exp_values[i] = exp(double(NNoutputValues[i])); // secte vsechny hodnoty do jedne a rozdeli je do dynamickeho pole
-		
-	}
-	
-	double* normalize_exp_values = new double[inSize];
-	double add_normalize_exp_values = 0.0;
-	for (auto i = 0; i < inSize; ++i) {
-		add_normalize_exp_values += normalize_exp_values[i] = exp_values[i] / add_exp_values;
-		
+
 	}
 
+	std::vector<double> normalize_exp_values;
+	std::vector<double> add_normalize_exp_values(1); // or std::vector<double> add_normalize_exp_values = std::vector<double>(1);
+	for (auto i = 0; i < inSize; ++i) {
+		add_normalize_exp_values[0] += exp_values[i] / add_exp_values;
+		normalize_exp_values.push_back(exp_values[i] / add_exp_values);
+
+	}
+	
+	if (probability == false)
+		return add_normalize_exp_values;
+	else {
+		return normalize_exp_values;
+	}
 }
+
 
 float sigmoidFunction(float x)
 {
