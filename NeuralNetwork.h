@@ -4,11 +4,9 @@
 #include "MatrixLibrary.h"
 #include <math.h>
 
-
-template<typename Base, typename T>
-inline bool instanceof(const T*) {
-	return std::is_base_of<Base, T>::value;
-}
+/////////////////////////////////////////////////////////////////////////////////////////
+/// navrhnout do teto knihovny funkci zvanou soft max pro modelovani pravdepodobnosti ///
+/////////////////////////////////////////////////////////////////////////////////////////
 
 std::vector<double> softMax(std::vector<float> NNoutputValues, int inSize, bool probability = false)
 {
@@ -34,6 +32,10 @@ std::vector<double> softMax(std::vector<float> NNoutputValues, int inSize, bool 
 	}
 }
 
+template<typename Base, typename T>
+inline bool instanceof(const T*) {
+	return std::is_base_of<Base, T>::value;
+}
 
 float sigmoidFunction(float x)
 {
@@ -69,10 +71,10 @@ private:
 	ActivationFunction dFunc;
 
 	float learningRate = 0.1;
-	Matrix* weights_ih;
-	Matrix* weights_ho;
-	Matrix* bias_h;
-	Matrix* bias_o;
+	mxLib::Matrix* weights_ih;
+	mxLib::Matrix* weights_ho;
+	mxLib::Matrix* bias_h;
+	mxLib::Matrix* bias_o;
 	
 
 public:
@@ -119,15 +121,15 @@ public:
 	std::vector<float> feedForward(std::vector<float> inputs, int inSize)
 	{
 
-		Matrix hidden;
-		Matrix inputsMatrix;
+		mxLib::Matrix hidden;
+		mxLib::Matrix inputsMatrix;
 		inputsMatrix.fromArray(inputs, inSize);  //2x1
 		hidden.multiplyTwoMatrix(*weights_ih, inputsMatrix); //2x2, 2x1 
 		hidden.addTwoMatrix(*bias_h);
 		hidden.map(func);
 
 
-		Matrix output;
+		mxLib::Matrix output;
 		output.multiplyTwoMatrix(*weights_ho, hidden);
 		output.addTwoMatrix(*bias_o);
 		output.map(func);
@@ -139,54 +141,54 @@ public:
 	void train(std::vector<float> inputs, int inSize, std::vector<float> targets, int inSize2)
 	{
 
-		Matrix hidden;
-		Matrix inputsMatrix;
+		mxLib::Matrix hidden;
+		mxLib::Matrix inputsMatrix;
 		inputsMatrix.fromArray(inputs, inSize);  //2x1
 		hidden.multiplyTwoMatrix(*weights_ih, inputsMatrix); //2x2, 2x1 
 		hidden.addTwoMatrix(*bias_h);
 		hidden.map(func);
 
-		Matrix output;
+		mxLib::Matrix output;
 		output.multiplyTwoMatrix(*weights_ho, hidden);//2x1
 		output.addTwoMatrix(*bias_o);
 		output.map(func);
 
-		Matrix target;
+		mxLib::Matrix target;
 		target.fromArray(targets, inSize2);
-		Matrix error;
+		mxLib::Matrix error;
 		error.subtract(target, output);
 
-		Matrix output_gradient;
+		mxLib::Matrix output_gradient;
 		output_gradient.map(output, dFunc);
 
 		output_gradient.multiplyTwoMatrixWithOneOther(error);
 		output_gradient.multiplyWithSingleNumber(learningRate);
 
-		Matrix hidden_for_transpose;
+		mxLib::Matrix hidden_for_transpose;
 		hidden_for_transpose.transpose(hidden);
 
-		Matrix delta_weights_ho;
+		mxLib::Matrix delta_weights_ho;
 		delta_weights_ho.multiplyTwoMatrix(output_gradient, hidden_for_transpose);
 		weights_ho->addTwoMatrix(delta_weights_ho);
 		bias_o->addTwoMatrix(output_gradient);
 
 		// pricte k vaham vypocitany rozdil vah
-		Matrix weights_ho_for_transpose;
+		mxLib::Matrix weights_ho_for_transpose;
 		weights_ho_for_transpose.transpose(*weights_ho);
-		Matrix hidden_errors;
+		mxLib::Matrix hidden_errors;
 		hidden_errors.multiplyTwoMatrix(weights_ho_for_transpose, error); // vynasobi vahy s chybou 
 
 		// vypocita gradient
-		Matrix hidden_gradient;
+		mxLib::Matrix hidden_gradient;
 		hidden_gradient.map(hidden, dFunc);  // projede hodnoty aktivacni funkci
 		hidden_gradient.multiplyTwoMatrixWithOneOther(hidden_errors);
 		// vynasobi obe matice
 		hidden_gradient.multiplyWithSingleNumber(learningRate); // pricte konstantni hodnotu jako rozdil zmeny vah
 
-		Matrix inputs_for_transpose;
+		mxLib::Matrix inputs_for_transpose;
 
 		inputs_for_transpose.transpose(inputsMatrix);
-		Matrix delta_weights_ih;
+		mxLib::Matrix delta_weights_ih;
 		delta_weights_ih.multiplyTwoMatrix(hidden_gradient, inputs_for_transpose);
 		weights_ih->addTwoMatrix(delta_weights_ih);
 		bias_h->addTwoMatrix(hidden_gradient);
