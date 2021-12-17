@@ -4,9 +4,6 @@
 #include "MatrixLibrary.h"
 #include <math.h>
 
-/////////////////////////////////////////////////////////////////////////////////////////
-/// navrhnout do teto knihovny funkci zvanou soft max pro modelovani pravdepodobnosti ///
-/////////////////////////////////////////////////////////////////////////////////////////
 
 std::vector<double> softMax(std::vector<float> NNoutputValues, int inSize, bool singleProbability = false)
 {
